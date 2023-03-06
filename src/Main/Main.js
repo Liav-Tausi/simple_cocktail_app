@@ -1,21 +1,22 @@
 import axios from "axios";
 import {
-  AppBar,
   FormGroup,
   Typography,
-  Toolbar,
   TextField,
   Button,
+  Grid,
+  Box,
+  CircularProgress,
 } from "@mui/material";
 import { useState } from "react";
-import { Container } from "@mui/system";
+import { Container } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import LocalBarIcon from "@mui/icons-material/LocalBar";
 import AbcIcon from "@mui/icons-material/Abc";
 import DisplayData from "../DisplayData/DisplayData";
 import Abc from "../Abc/Abc";
 
 const Main = () => {
+  const [loading, setloading] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [inputData, setInputData] = useState(null);
   const [searchByLetters, setsearchByLetters] = useState(false);
@@ -25,20 +26,23 @@ const Main = () => {
   const request = async () => {
     const invalidChars = /[$#=@!+%^&*{}()]/;
     try {
+      setloading(true);
       if (inputValue.length === 1 && !invalidChars.test(inputValue)) {
         handleLetterRequest(inputValue);
       } else if (inputValue.length > 1 && !invalidChars.test(inputValue)) {
         const response = await axios.get(
           `https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${inputValue}`
         );
-        console.log(response);
         if (response.status !== 200) {
+          setloading(false);
           throw new Error("response status error");
         }
         if (response.data.drinks) {
+          setloading(false);
           setInputData(response);
-        }else {
-          alert('No Cocktails Found')
+        } else {
+          setloading(false);
+          alert("No Cocktails Found");
         }
       } else {
         alert("Invalid Search!");
@@ -50,12 +54,15 @@ const Main = () => {
 
   const handleLetterRequest = async (letter) => {
     try {
+      setloading(true);
       const response = await axios.get(
         `https://www.thecocktaildb.com/api/json/v1/1/search.php?f=${letter}`
       );
       if (response.status !== 200) {
+        setloading(false);
         throw new Error("response status error");
       }
+      setloading(false);
       setInputData(response);
     } catch (error) {
       console.log(error);
@@ -64,15 +71,6 @@ const Main = () => {
 
   return (
     <>
-      <AppBar position="sticky" sx={{ bgcolor: "#00ADB5" }}>
-        <Toolbar>
-          <Typography variant="h1" fontSize={"27px"}>
-            Cocktail App
-          </Typography>
-          <LocalBarIcon />
-        </Toolbar>
-      </AppBar>
-
       <Container
         sx={{
           bgcolor: "#EEEEEE",
@@ -154,12 +152,20 @@ const Main = () => {
                 />
               ))}
           </FormGroup>
-
         </FormGroup>
-        {inputData &&
-          inputData.data.drinks.map((drink) => (
-            <DisplayData key={drink.idDrink} drink={drink} />
-          ))}
+        {loading && (
+          <Box sx={{ display: "flex", justifyContent: "center", my: 30 }}>
+            <CircularProgress />
+          </Box>
+        )}
+        <Grid container spacing={2} mt={4}>
+          {inputData &&
+            inputData.data.drinks.map((drink) => (
+              <Grid item xs={12} sm={6} key={drink.idDrink}>
+                <DisplayData key={drink.idDrink} drink={drink} />
+              </Grid>
+            ))}
+        </Grid>
       </Container>
     </>
   );

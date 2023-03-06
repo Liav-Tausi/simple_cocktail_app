@@ -1,47 +1,54 @@
 import React, { useState } from "react";
-import { List, ListItem, Paper, Typography } from "@mui/material";
+import { Box, CircularProgress, List, ListItem, Paper, Typography } from "@mui/material";
+import { Link } from "react-router-dom";
 
-const DisplayData = ({ drink }) => {
-  const [showMore, setShowMore] = useState(false);
-
-  const handleMouseOver = () => {
-    setShowMore(true);
-  };
-
-  const handleMouseOut = () => {
-    setShowMore(false);
-  };
-
+const DisplayData = (props) => {
   return (
-    <Paper
-      sx={{ my: "15px", p: "5px", bgcolor: "#EEEEEE" }}
-      onMouseOver={handleMouseOver}
-      onMouseOut={handleMouseOut}
-    >
-      <Typography
-        component={"h4"}
-        sx={{ fontWeight: "bolder", fontSize: "20px" }}
-      >
-        {drink.strDrink}
-      </Typography>
-      <Typography>{drink.strInstructions}</Typography>
-      {showMore && (
-        <>
-          <Typography component={"h5"} sx={{ mt: "10px", fontWeight: "bold" }}>
-            Ingredients:
-          </Typography>
-          <List>
-            <ListItem>Category: {drink.strCategory}</ListItem>
-            <ListItem>Glass: {drink.strGlass}</ListItem>
-            <ListItem>
-              Ingredients: {drink.strIngredient1} {drink.strIngredient2}{" "}
-              {drink.strIngredient3} {drink.strIngredient4}{" "}
-              {drink.strIngredient5} {drink.strIngredient6}{" "}
-            </ListItem>
-          </List>
-        </>
+    <>
+      {!props && (
+        <Box sx={{ display: "flex", justifyContent: "center", my: 30 }}>
+          <CircularProgress />
+        </Box>
       )}
-    </Paper>
+
+      <Link
+        to={`${props.drink.strDrink}`}
+        state={props.drink.strDrink}
+        style={{ textDecoration: "none" }}
+      >
+        <Paper
+          sx={{
+            my: "15px",
+            p: "5px",
+            bgcolor: "#EEEEEE",
+            display: "flex",
+            alignItems: "center",
+            "&:hover": {
+              transform: "scale(0.992)",
+              cursor: "pointer",
+            },
+          }}
+        >
+          <Typography
+            component={"h4"}
+            sx={{
+              fontWeight: "bolder",
+              fontSize: "20px",
+              display: "flex",
+              justifyContent: "space-evenly",
+              alignItems: "center",
+              flexGrow: 1,
+            }}
+          >
+            {props.drink.strDrink}
+          </Typography>
+          <img
+            src={props.drink.strDrinkThumb}
+            style={{ width: "150px", borderRadius: "15px" }}
+          />
+        </Paper>
+      </Link>
+    </>
   );
 };
 
