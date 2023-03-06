@@ -1,6 +1,6 @@
 # simple_cocktail_app
 
-a simple react & mui cocktail search app 
+a simple react & router & mui cocktail search app 
 
 
 iphone 12             |  full-size 
